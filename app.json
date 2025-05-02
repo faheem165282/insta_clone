@@ -1,0 +1,20 @@
+{
+  "platform": {
+    "kind": "app"
+  },
+  "triggers": {
+    "manual": {
+      "type": "manual"
+    }
+  },
+  "routes": [
+    {
+      "route": "/",
+      "serve": {
+        "type": "function",
+        "function": "app",
+        "file": "app.py"
+      }
+    }
+  ]
+}
