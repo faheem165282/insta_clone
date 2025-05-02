@@ -1,0 +1,55 @@
+/* Main styles for PhotoShare app */
+
+body {
+    background-color: #f8f9fa;
+    padding-bottom: 60px;
+}
+
+.navbar {
+    margin-bottom: 20px;
+}
+
+/* Card styling */
+.card {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Photo display */
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Rating stars */
+.rating {
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.star {
+    display: inline-block;
+    transition: color 0.2s;
+}
+
+.star:hover {
+    transform: scale(1.2);
+}
+
+/* Footer */
+footer {
+    margin-top: 30px;
+}
+
+/* Jumbotron replacement (Bootstrap 5 removed jumbotron) */
+.jumbotron {
+    padding: 2rem 1rem;
+    margin-bottom: 2rem;
+    background-color: #e9ecef;
+    border-radius: 0.3rem;
+}

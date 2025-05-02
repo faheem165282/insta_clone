@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <h1>Upload Photo</h1>
+        <form action="" method="post" enctype="multipart/form-data" novalidate>
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {{ form.photo.label(class="form-label") }}
+                {{ form.photo(class="form-control") }}
+                {% for error in form.photo.errors %}
+                <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+                <div class="form-text">Upload a JPG, PNG, or GIF file</div>
+            </div>
+            <div class="mb-3">
+                {{ form.title.label(class="form-label") }}
+                {{ form.title(class="form-control") }}
+                {% for error in form.title.errors %}
+                <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.caption.label(class="form-label") }}
+                {{ form.caption(class="form-control", rows=3) }}
+                {% for error in form.caption.errors %}
+                <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.location.label(class="form-label") }}
+                {{ form.location(class="form-control") }}
+                {% for error in form.location.errors %}
+                <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.people.label(class="form-label") }}
+                {{ form.people(class="form-control") }}
+                {% for error in form.people.errors %}
+                <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+                <div class="form-text">Enter names separated by commas</div>
+            </div>
+            <div class="mb-3">
+                {{ form.submit(class="btn btn-primary") }}
+                <a href="{{ url_for('creator.dashboard') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

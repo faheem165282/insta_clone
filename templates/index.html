@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="jumbotron p-5 bg-light rounded">
+            <h1 class="display-4">Welcome to PhotoShare!</h1>
+            <p class="lead">A scalable platform for sharing photos with friends and family.</p>
+            <hr class="my-4">
+            <p>Join today as a creator to upload photos or as a consumer to view, comment, and rate photos.</p>
+            {% if current_user.is_anonymous %}
+            <div class="mt-4">
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary me-2">Register</a>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-secondary">Login</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

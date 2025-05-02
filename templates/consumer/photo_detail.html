@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <img src="{{ url_for('static', filename='uploads/' + photo.filename) }}" class="card-img-top" alt="{{ photo.title }}">
+            <div class="card-body">
+                <h3 class="card-title">{{ photo.title }}</h3>
+                <p class="card-text">{{ photo.caption }}</p>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="text-muted mb-0">
+                            {% if photo.location %}Location: {{ photo.location }}<br>{% endif %}
+                            {% if photo.people %}People: {{ photo.people }}<br>{% endif %}
+                            By: {{ photo.author.username }}<br>
+                            Uploaded: {{ photo.upload_date.strftime('%Y-%m-%d %H:%M') }}
+                        </p>
+                    </div>
+                    <div>
+                        <p class="mb-1">Average Rating: <span id="avgRating">{{ '%.1f'|format(avg_rating) }}</span>/5.0</p>
+                        <div class="rating">
+                            {% for i in range(1, 6) %}
+                            <span class="star" data-value="{{ i }}" {% if user_rating and user_rating.rating >= i %}style="color: gold;"{% endif %}>★</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Comments</h4>
+            </div>
+            <div class="card-body">
+                {% if comments %}
+                    {% for comment in comments %}
+                    <div class="mb-3 pb-2 border-bottom">
+                        <h6 class="mb-0">{{ comment.author.username }}</h6>
+                        <small class="text-muted">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                        <p class="mt-1">{{ comment.content }}</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <p>No comments yet. Be the first to comment!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h4>Add a comment</h4>
+            </div>
+            <div class="card-body">
+                <form action="" method="post">
+                    {{ comment_form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ comment_form.content(class="form-control", rows=5) }}
+                        {% for error in comment_form.content.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ comment_form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include in base or specific page -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Star rating functionality
+    const stars = document.querySelectorAll('.star');
+    stars.forEach(star => {
+        star.addEventListener('mouseover', function() {
+            const value = this.getAttribute('data-value');
+            highlightStars(value);
+        });
+        
+        star.addEventListener('mouseout', function() {
+            resetStars();
+        });
+        
+        star.addEventListener('click', function() {
+            const value = this.getAttribute('data-value');
+            submitRating(value);
+        });
+    });
+    
+    function highlightStars(value) {
+        stars.forEach(star => {
+            const starValue = star.getAttribute('data-value');
+            if (starValue <= value) {
+                star.style.color = 'gold';
+            } else {
+                star.style.color = 'black';
+            }
+        });
+    }
+    
+    function resetStars() {
+        stars.forEach(star => {
+            const userRating = {{ user_rating.rating if user_rating else 0 }};
+            const starValue = star.getAttribute('data-value');
+            if (starValue <= userRating) {
+                star.style.color = 'gold';
+            } else {
+                star.style.color = 'black';
+            }
+        });
+    }
+    
+    function submitRating(rating) {
+        fetch('{{ url_for("consumer.rate_photo", id=photo.id) }}/' + rating, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('avgRating').textContent = data.avgRating.toFixed(1);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
