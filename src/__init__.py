@@ -24,18 +24,16 @@ def create_app(config_class=Config):
     login.init_app(app)
     
     # Register blueprints
-    from app.auth import bp as auth_bp
+    from src.auth import bp as auth_bp
     app.register_blueprint(auth_bp, url_prefix='/auth')
     
-    from app.creator import bp as creator_bp
+    from src.creator import bp as creator_bp
     app.register_blueprint(creator_bp, url_prefix='/creator')
     
-    from app.consumer import bp as consumer_bp
+    from src.consumer import bp as consumer_bp
     app.register_blueprint(consumer_bp, url_prefix='/consumer')
     
-    from app.main import bp as main_bp
+    from src.main import bp as main_bp
     app.register_blueprint(main_bp)
     
     return app
-
-from app import models

@@ -1,5 +1,5 @@
-from app import create_app, db
-from app.models import User, Photo, Comment, Rating
+from src import create_app, db
+from src.models import User, Photo, Comment, Rating
 
 # Create the Flask application instance
 # This needs to be a global variable named 'app' for Azure App Service
@@ -11,4 +11,4 @@ def make_shell_context():
 
 # This block only runs when executing the file directly, not when imported
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

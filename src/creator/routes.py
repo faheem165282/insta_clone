@@ -8,10 +8,10 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired
 from wtforms import StringField, TextAreaField, SubmitField
 from wtforms.validators import DataRequired, Length
-from app import db
-from app.creator import bp
+from src import db
+from src.creator import bp
 # Defining form class directly to avoid import issues
-from app.models import Photo
+from src.models import Photo
 
 # Define the form class directly here to avoid import errors
 class UploadPhotoForm(FlaskForm):

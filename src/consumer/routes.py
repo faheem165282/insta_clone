@@ -1,9 +1,9 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
-from app import db
-from app.consumer import bp
-from app.models import Photo, Comment, Rating
-from app.consumer.forms import CommentForm, SearchForm
+from src import db
+from src.consumer import bp
+from src.models import Photo, Comment, Rating
+from src.consumer.forms import CommentForm, SearchForm
 
 @bp.route('/gallery')
 @login_required

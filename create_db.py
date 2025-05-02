@@ -1,5 +1,5 @@
-from app import create_app, db
-from app.models import User, Photo, Comment, Rating
+from src import create_app, db
+from src.models import User, Photo, Comment, Rating
 
 app = create_app()
 app.app_context().push()
