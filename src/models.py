@@ -33,13 +33,15 @@ class Photo(db.Model):
     location = db.Column(db.String(100))
     people = db.Column(db.String(200))
     filename = db.Column(db.String(255))  # Store local filename instead of blob_url
+    media_type = db.Column(db.String(10), default='photo')  # 'photo' or 'video'
+    file_size = db.Column(db.Integer)  # File size in bytes
     upload_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     comments = db.relationship('Comment', backref='photo', lazy='dynamic', cascade='all, delete-orphan')
     likes = db.relationship('Like', backref='photo', lazy='dynamic', cascade='all, delete-orphan')
 
     def __repr__(self):
-        return f'<Photo {self.title}>'
+        return f'<Media {self.title} ({self.media_type})>'
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)

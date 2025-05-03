@@ -4,27 +4,26 @@ from werkzeug.utils import secure_filename
 import os
 from datetime import datetime
 import uuid
-from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileRequired
-from wtforms import StringField, TextAreaField, SubmitField
-from wtforms.validators import DataRequired, Length
 from src import db
 from src.creator import bp
-# Defining form class directly to avoid import issues
+from src.creator.forms import UploadMediaForm
 from src.models import Photo
 
-# Define the form class directly here to avoid import errors
-class UploadPhotoForm(FlaskForm):
-    photo = FileField('Photo', validators=[FileRequired()])
-    title = StringField('Title', validators=[DataRequired(), Length(min=1, max=100)])
-    caption = TextAreaField('Caption', validators=[Length(max=200)])
-    location = StringField('Location', validators=[Length(max=100)])
-    people = StringField('People in Photo', validators=[Length(max=200)])
-    submit = SubmitField('Upload')
+# Maximum file sizes
+MAX_PHOTO_SIZE = 5 * 1024 * 1024  # 5MB
+MAX_VIDEO_SIZE = 50 * 1024 * 1024  # 50MB
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
+# Allowed file extensions
+ALLOWED_PHOTO_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_VIDEO_EXTENSIONS = {'mp4', 'mov', 'avi'}
+
+def allowed_file(filename, media_type):
+    extension = filename.rsplit('.', 1)[1].lower() if '.' in filename else ''
+    if media_type == 'photo':
+        return extension in ALLOWED_PHOTO_EXTENSIONS
+    elif media_type == 'video':
+        return extension in ALLOWED_VIDEO_EXTENSIONS
+    return False
 
 @bp.route('/dashboard')
 @login_required
@@ -40,60 +39,82 @@ def dashboard():
 @login_required
 def upload():
     if current_user.role != 'creator':
-        flash('Access denied. You need to be a creator to upload photos.')
+        flash('Access denied. You need to be a creator to upload media.')
         return redirect(url_for('main.index'))
     
-    form = UploadPhotoForm()
-    if form.validate_on_submit():
-        if form.photo.data and allowed_file(form.photo.data.filename):
-            # Generate a unique filename to avoid collisions
-            filename = secure_filename(form.photo.data.filename)
-            unique_filename = f"{uuid.uuid4()}_{filename}"
-            
-            # Save file to local storage
-            photo_path = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_filename)
-            form.photo.data.save(photo_path)
-            
-            # Save metadata to database
-            photo = Photo(
-                title=form.title.data,
-                caption=form.caption.data,
-                location=form.location.data,
-                people=form.people.data,
-                filename=unique_filename,
-                user_id=current_user.id
-            )
-            db.session.add(photo)
-            db.session.commit()
-            
-            flash('Your photo has been uploaded!')
-            return redirect(url_for('creator.dashboard'))
-        else:
-            flash('Invalid file format. Please upload a PNG, JPG, JPEG, or GIF file.')
+    form = UploadMediaForm()
     
-    return render_template('creator/upload.html', title='Upload Photo', form=form)
+    if form.validate_on_submit():
+        file = form.media_file.data
+        media_type = form.media_type.data
+        
+        # Check file size
+        file.seek(0, os.SEEK_END)
+        file_size = file.tell()
+        file.seek(0)  # Reset file pointer to the beginning
+        
+        # Validate file size
+        if (media_type == 'photo' and file_size > MAX_PHOTO_SIZE) or \
+           (media_type == 'video' and file_size > MAX_VIDEO_SIZE):
+            max_size_mb = MAX_PHOTO_SIZE / (1024 * 1024) if media_type == 'photo' else MAX_VIDEO_SIZE / (1024 * 1024)
+            flash(f'{media_type.capitalize()} size exceeds maximum limit of {max_size_mb}MB!')
+            return redirect(url_for('creator.upload'))
+        
+        # Validate file extension
+        if not allowed_file(file.filename, media_type):
+            allowed_extensions = ALLOWED_PHOTO_EXTENSIONS if media_type == 'photo' else ALLOWED_VIDEO_EXTENSIONS
+            flash(f'Invalid file extension. Allowed extensions for {media_type}: {", ".join(allowed_extensions)}')
+            return redirect(url_for('creator.upload'))
+        
+        # Secure the filename and make it unique
+        filename = secure_filename(file.filename)
+        unique_filename = f"{uuid.uuid4()}_{filename}"
+        
+        # Save the file
+        file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], unique_filename))
+        
+        # Create a database record
+        photo = Photo(
+            title=form.title.data,
+            caption=form.caption.data,
+            location=form.location.data,
+            people=form.people.data,
+            filename=unique_filename,
+            media_type=media_type,
+            file_size=file_size,
+            user_id=current_user.id
+        )
+        db.session.add(photo)
+        db.session.commit()
+        
+        flash(f'Your {media_type} has been uploaded!')
+        return redirect(url_for('creator.dashboard'))
+    
+    return render_template('creator/upload.html', title='Upload Media', form=form)
 
-@bp.route('/delete/<int:id>', methods=['POST'])
+@bp.route('/delete/<int:id>')
 @login_required
-def delete_photo(id):
+def delete(id):
     if current_user.role != 'creator':
-        flash('Access denied. You need to be a creator to delete photos.')
+        flash('Access denied. You need to be a creator to delete media.')
         return redirect(url_for('main.index'))
     
     photo = Photo.query.get_or_404(id)
+    
+    # Check if the logged-in user is the owner of the photo
     if photo.user_id != current_user.id:
-        flash('You can only delete your own photos.')
+        flash('Access denied. You can only delete your own media.')
         return redirect(url_for('creator.dashboard'))
     
-    # Delete the physical file
+    # Delete the file from the filesystem
     try:
         os.remove(os.path.join(current_app.config['UPLOAD_FOLDER'], photo.filename))
-    except:
-        # File might be already gone, continue with database deletion
-        pass
+    except Exception as e:
+        flash(f'Error deleting file: {str(e)}')
     
-    # Delete from database
+    # Delete the database record and related comments/likes
     db.session.delete(photo)
     db.session.commit()
-    flash('Your photo has been deleted.')
+    
+    flash('Media deleted successfully!')
     return redirect(url_for('creator.dashboard'))

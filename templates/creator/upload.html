@@ -3,16 +3,24 @@
 {% block content %}
 <div class="row">
     <div class="col-md-6 offset-md-3">
-        <h1>Upload Photo</h1>
+        <h1>Upload Media</h1>
         <form action="" method="post" enctype="multipart/form-data" novalidate>
             {{ form.hidden_tag() }}
             <div class="mb-3">
-                {{ form.photo.label(class="form-label") }}
-                {{ form.photo(class="form-control") }}
-                {% for error in form.photo.errors %}
+                {{ form.media_type.label(class="form-label") }}
+                {{ form.media_type(class="form-select") }}
+                {% for error in form.media_type.errors %}
                 <span class="text-danger">{{ error }}</span>
                 {% endfor %}
-                <div class="form-text">Upload a JPG, PNG, or GIF file</div>
+            </div>
+            <div class="mb-3">
+                {{ form.media_file.label(class="form-label") }}
+                {{ form.media_file(class="form-control") }}
+                {% for error in form.media_file.errors %}
+                <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+                <div class="form-text" id="photoHelp" style="display: none;">Upload a JPG, PNG, or GIF file (max 5MB)</div>
+                <div class="form-text" id="videoHelp" style="display: none;">Upload a MP4, MOV, or AVI file (max 50MB)</div>
             </div>
             <div class="mb-3">
                 {{ form.title.label(class="form-label") }}
@@ -41,13 +49,37 @@
                 {% for error in form.people.errors %}
                 <span class="text-danger">{{ error }}</span>
                 {% endfor %}
-                <div class="form-text">Enter names separated by commas</div>
+                <div class="form-text">Enter names of people, separated by commas</div>
             </div>
-            <div class="mb-3">
+            <div class="d-grid gap-2">
                 {{ form.submit(class="btn btn-primary") }}
-                <a href="{{ url_for('creator.dashboard') }}" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+    // JavaScript to show/hide appropriate help text based on media type
+    document.addEventListener('DOMContentLoaded', function() {
+        const mediaTypeSelect = document.getElementById('media_type');
+        const photoHelp = document.getElementById('photoHelp');
+        const videoHelp = document.getElementById('videoHelp');
+        
+        function updateHelpText() {
+            if (mediaTypeSelect.value === 'photo') {
+                photoHelp.style.display = 'block';
+                videoHelp.style.display = 'none';
+            } else {
+                photoHelp.style.display = 'none';
+                videoHelp.style.display = 'block';
+            }
+        }
+        
+        // Initial update
+        updateHelpText();
+        
+        // Update on change
+        mediaTypeSelect.addEventListener('change', updateHelpText);
+    });
+</script>
 {% endblock %}
