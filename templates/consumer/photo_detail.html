@@ -18,12 +18,14 @@
                         </p>
                     </div>
                     <div>
-                        <p class="mb-1">Average Rating: <span id="avgRating">{{ '%.1f'|format(avg_rating) }}</span>/5.0</p>
-                        <div class="rating">
-                            {% for i in range(1, 6) %}
-                            <span class="star" data-value="{{ i }}" {% if user_rating and user_rating.rating >= i %}style="color: gold;"{% endif %}>★</span>
-                            {% endfor %}
-                        </div>
+                        <button id="likeButton" class="btn {% if user_like %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                            <i class="fa fa-thumbs-up"></i> 
+                            <span id="likeText">{% if user_like %}Liked{% else %}Like{% endif %}</span>
+                        </button>
+                        <p class="mt-2 mb-0">
+                            <span id="likesCount">{{ likes_count }}</span> 
+                            {% if likes_count == 1 %}person likes{% else %}people like{% endif %} this
+                        </p>
                     </div>
                 </div>
             </div>
@@ -72,52 +74,22 @@
     </div>
 </div>
 
-<!-- Include in base or specific page -->
+<!-- Add Font Awesome for the thumbs up icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<!-- JavaScript for like functionality -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Star rating functionality
-    const stars = document.querySelectorAll('.star');
-    stars.forEach(star => {
-        star.addEventListener('mouseover', function() {
-            const value = this.getAttribute('data-value');
-            highlightStars(value);
-        });
-        
-        star.addEventListener('mouseout', function() {
-            resetStars();
-        });
-        
-        star.addEventListener('click', function() {
-            const value = this.getAttribute('data-value');
-            submitRating(value);
-        });
+    const likeButton = document.getElementById('likeButton');
+    const likeText = document.getElementById('likeText');
+    const likesCount = document.getElementById('likesCount');
+    
+    likeButton.addEventListener('click', function() {
+        toggleLike();
     });
     
-    function highlightStars(value) {
-        stars.forEach(star => {
-            const starValue = star.getAttribute('data-value');
-            if (starValue <= value) {
-                star.style.color = 'gold';
-            } else {
-                star.style.color = 'black';
-            }
-        });
-    }
-    
-    function resetStars() {
-        stars.forEach(star => {
-            const userRating = {{ user_rating.rating if user_rating else 0 }};
-            const starValue = star.getAttribute('data-value');
-            if (starValue <= userRating) {
-                star.style.color = 'gold';
-            } else {
-                star.style.color = 'black';
-            }
-        });
-    }
-    
-    function submitRating(rating) {
-        fetch('{{ url_for("consumer.rate_photo", id=photo.id) }}/' + rating, {
+    function toggleLike() {
+        fetch('{{ url_for("consumer.like_photo", id=photo.id) }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -128,7 +100,27 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                document.getElementById('avgRating').textContent = data.avgRating.toFixed(1);
+                // Update button appearance based on like status
+                if (data.liked) {
+                    likeButton.classList.remove('btn-outline-primary');
+                    likeButton.classList.add('btn-primary');
+                    likeText.textContent = 'Liked';
+                } else {
+                    likeButton.classList.remove('btn-primary');
+                    likeButton.classList.add('btn-outline-primary');
+                    likeText.textContent = 'Like';
+                }
+                
+                // Update like count
+                likesCount.textContent = data.likesCount;
+                
+                // Update plural text for "people like this"
+                const peopleText = likesCount.nextSibling;
+                if (data.likesCount === 1) {
+                    peopleText.textContent = 'person likes this';
+                } else {
+                    peopleText.textContent = 'people like this';
+                }
             }
         });
     }

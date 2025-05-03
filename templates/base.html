@@ -25,11 +25,10 @@
                             <a class="nav-link" href="{{ url_for('creator.dashboard') }}">Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('creator.upload') }}">Upload Photo</a>
-                        </li>
+                            <a class="nav-link" href="{{ url_for('creator.upload') }}">Upload Photo</a>                        </li>
                         {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('consumer.gallery') }}">Gallery</a>
+                            <a class="nav-link" href="/consumer/gallery">Gallery</a>
                         </li>
                         {% endif %}
                     {% endif %}
