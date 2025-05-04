@@ -1,5 +1,3 @@
-# Simple JavaScript for PhotoShare app
-
 // This file can include additional JavaScript functionality as needed
 document.addEventListener('DOMContentLoaded', function() {
     // Enable Bootstrap tooltips

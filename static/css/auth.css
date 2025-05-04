@@ -1,0 +1,176 @@
+/* Authentication pages custom styling with YouTube-like red color scheme */
+.auth-container {
+    max-width: 500px;
+    margin: 3rem auto;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    background: #ffffff;
+    border-top: 4px solid #ff0000;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #212121;
+    margin-bottom: 0.5rem;
+}
+
+.auth-subtitle {
+    font-size: 1rem;
+    color: #606060;
+    margin-bottom: 1.5rem;
+}
+
+.auth-form .form-control, 
+.auth-form .form-select {
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    border: 1px solid #dde2e6;
+    margin-bottom: 0.5rem;
+}
+
+.auth-form .form-control:focus,
+.auth-form .form-select:focus {
+    border-color: #ff0000;
+    box-shadow: 0 0 0 0.2rem rgba(255, 0, 0, 0.15);
+}
+
+.auth-form label {
+    font-weight: 600;
+    color: #212121;
+}
+
+.auth-submit-btn {
+    background: #ff0000;
+    border: none;
+    border-radius: 4px;
+    padding: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-top: 1rem;
+    transition: all 0.2s ease;
+    width: 100%;
+    text-transform: uppercase;
+}
+
+.auth-submit-btn:hover {
+    background: #cc0000;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.auth-alt-link {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.auth-alt-link a {
+    color: #ff0000;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.auth-alt-link a:hover {
+    color: #cc0000;
+    text-decoration: underline;
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.auth-divider span {
+    padding: 0 1rem;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.form-error {
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+/* Custom checkbox styling */
+.custom-checkbox {
+    padding-left: 2rem;
+    position: relative;
+}
+
+.custom-checkbox .form-check-input {
+    width: 1.2rem;
+    height: 1.2rem;
+    margin-left: -2rem;
+}
+
+.custom-checkbox .form-check-input:checked {
+    background-color: #5b7fde;
+    border-color: #5b7fde;
+}
+
+/* Role selection styling */
+.role-selector-container {
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+.role-option {
+    flex: 1;
+    text-align: center;
+    padding: 1rem;
+    border: 1px solid #dde2e6;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 0 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.role-option:first-child {
+    margin-left: 0;
+}
+
+.role-option:last-child {
+    margin-right: 0;
+}
+
+.role-option.selected {
+    border-color: #ff0000;
+    background-color: rgba(255, 0, 0, 0.05);
+}
+
+.role-option i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #606060;
+}
+
+.role-option.selected i {
+    color: #ff0000;
+}
+
+.role-option h5 {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.role-option p {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 0;
+}

@@ -1,34 +1,58 @@
 {% extends "base.html" %}
 
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
 {% block content %}
-<div class="row">
-    <div class="col-md-6 offset-md-3">
-        <h1>Sign In</h1>
-        <form action="" method="post" novalidate>
+<div class="container">
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1 class="auth-title">Welcome Back</h1>
+            <p class="auth-subtitle">Sign in to continue to PhotoShare</p>
+        </div>
+        
+        <form class="auth-form" action="" method="post" novalidate>
             {{ form.hidden_tag() }}
             <div class="mb-3">
-                {{ form.username.label(class="form-label") }}
-                {{ form.username(class="form-control") }}
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    {{ form.username(class="form-control", placeholder="Username") }}
+                </div>
                 {% for error in form.username.errors %}
-                <span class="text-danger">{{ error }}</span>
+                <div class="form-error">{{ error }}</div>
                 {% endfor %}
             </div>
+            
             <div class="mb-3">
-                {{ form.password.label(class="form-label") }}
-                {{ form.password(class="form-control") }}
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                    {{ form.password(class="form-control", placeholder="Password") }}
+                </div>
                 {% for error in form.password.errors %}
-                <span class="text-danger">{{ error }}</span>
+                <div class="form-error">{{ error }}</div>
                 {% endfor %}
             </div>
-            <div class="mb-3 form-check">
+            
+            <div class="mb-3 custom-checkbox">
                 {{ form.remember_me(class="form-check-input") }}
                 {{ form.remember_me.label(class="form-check-label") }}
             </div>
+            
             <div class="mb-3">
-                {{ form.submit(class="btn btn-primary") }}
+                {{ form.submit(class="btn btn-primary auth-submit-btn") }}
             </div>
         </form>
-        <p>New User? <a href="{{ url_for('auth.register') }}">Click to Register</a></p>
+        
+        <div class="auth-divider">
+            <span>OR</span>
+        </div>
+        
+        <div class="auth-alt-link">
+            <p>New to PhotoShare? <a href="{{ url_for('auth.register') }}">Create an account</a></p>
+        </div>
     </div>
 </div>
 {% endblock %}
